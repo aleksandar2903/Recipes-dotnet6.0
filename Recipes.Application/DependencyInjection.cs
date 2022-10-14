@@ -1,5 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Recipes.Application.Services.Authentification;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Recipes.Application.Persistance;
 
 namespace Recipes.Application
 {
@@ -7,7 +8,7 @@ namespace Recipes.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddScoped<IAuthentificationService, AuthentificationService>();
+            services.AddMediatR(typeof(DependencyInjection).Assembly);
             return services;
         }
     }
