@@ -5,6 +5,7 @@ using Recipes.Domain.Primitives;
 using System.Reflection;
 using Recipes.Domain.Entities;
 using Recipes.Infrastructure.Extensions;
+using System.Linq.Expressions;
 
 namespace Recipes.Infrastructure
 {
@@ -23,7 +24,14 @@ namespace Recipes.Infrastructure
             base.Set<TEntity>();
 
         /// <inheritdoc />
-        public async Task<TEntity> GetBydIdAsync<TEntity>(Guid id)
+        public async Task<TEntity> GetByAsync<TEntity>(Expression<Func<TEntity, bool>> expression)
+            where TEntity : Entity
+        {
+            return await Set<TEntity>().FirstOrDefaultAsync(expression);
+        }
+
+        /// <inheritdoc />
+        public async Task<TEntity> GetByIdAsync<TEntity>(Guid id)
             where TEntity : Entity
         {
             return await Set<TEntity>().FirstOrDefaultAsync(e => e.Id == id);

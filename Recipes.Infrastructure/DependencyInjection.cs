@@ -4,8 +4,6 @@ using Recipes.Application.Abstractions.Data;
 using Recipes.Application.Common.Interfaces.Authentification;
 using Recipes.Infrastructure.Authentification;
 using Microsoft.EntityFrameworkCore;
-using Recipes.Application.Persistance;
-using Recipes.Infrastructure.Persistance.Users;
 
 namespace Recipes.Infrastructure;
 
@@ -19,7 +17,6 @@ public static class DependencyInjection
 
         services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-        services.AddScoped<IUserRepository, UserRepository>();
         return services;
     }
 }

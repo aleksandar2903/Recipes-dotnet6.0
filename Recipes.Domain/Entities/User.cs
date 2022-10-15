@@ -20,8 +20,13 @@ public sealed class User : Entity, IAuditableEntity
     public DateTime CreatedOnUtc { get; private set; }
     public DateTime? ModifiedOnUtc { get; private set; }
 
-    public static User Create(FirstName firstName, LastName lastName, Email email, string passwordHash)
+    public static User Create(Guid id, FirstName firstName, LastName lastName, Email email, Password passwordHash)
     {
-        return new User(new Guid(), firstName.Value, lastName.Value, email.Value, passwordHash);
+        return new User(id, firstName.Value, lastName.Value, email.Value, passwordHash.Value);
+    }
+
+    public bool IsPasswordMatched(Password passwordHash)
+    {
+        return PasswordHash == passwordHash.Value;
     }
 }

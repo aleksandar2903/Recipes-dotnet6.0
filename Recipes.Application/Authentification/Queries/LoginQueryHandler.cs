@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Recipes.Application.Abstractions.Data;
 using Recipes.Application.Authentification.Common;
 using Recipes.Application.Common.Interfaces.Authentification;
-using Recipes.Application.Persistance;
 using Recipes.Domain.Entities;
+using Recipes.Domain.Errors;
 using Recipes.Domain.Shared;
 using Recipes.Domain.ValueObjects;
 
@@ -23,28 +22,21 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, Result<Authentifica
 
     public async Task<Result<AuthentificationResult>> Handle(LoginQuery request, CancellationToken cancellationToken)
     {
-        // Check does user exists in database
-        var email = Email.Create(request.Email);
-
-        var result = Result.FirstFailureOrSuccess(email);
-
-        if (result.IsFailure)
-        {
-            return Result.Failure<AuthentificationResult>(result.Error);
-        }
-
-        var user = await _dbContext.Set<User>().FirstOrDefaultAsync(user => user.Email == email.Value.Value);
+        var emailResult = Email.Create(request.Email);
+        var passwordResult = Password.Create(request.PasswordHash);
+        // Check does user exist in database
+        var user = await _dbContext.GetByAsync<User>(user => user.Email == emailResult.Value.Value);
 
         if (user is null)
         {
-            return Result.Failure<AuthentificationResult>(new Error("User.NotFound", "User doesn't exits."));
+            return Result.Failure<AuthentificationResult>(DomainErrors.User.UserNotFound);
         }
 
-        // Check does password matches user password in database
+        // Check does password match user password in database
 
-        if (user.PasswordHash != request.PasswordHash)
+        if (!user.IsPasswordMatched(passwordResult.Value))
         {
-            return Result.Failure<AuthentificationResult>(new Error("User.InvalidPassword", "Entered password is invalid."));
+            return Result.Failure<AuthentificationResult>(DomainErrors.User.InvalidPassword);
         }
 
         var token = _jwtTokenGenerator.GenerateToken(user);

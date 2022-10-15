@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Recipes.Domain.Primitives;
+using System.Linq.Expressions;
 
 namespace Recipes.Application.Abstractions.Data;
 
@@ -17,9 +18,18 @@ public interface IDbContext
     /// Gets the entity with the specified identifier.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="expression">The entity expression.</param>
+    /// <returns>The maybe instance that may contain the <typeparamref name="TEntity"/> with the specified identifier.</returns>
+    Task<TEntity> GetByAsync<TEntity>(Expression<Func<TEntity, bool>> expression)
+        where TEntity : Entity;
+
+    /// <summary>
+    /// Gets the entity with the specified identifier.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="id">The entity identifier.</param>
     /// <returns>The maybe instance that may contain the <typeparamref name="TEntity"/> with the specified identifier.</returns>
-    Task<TEntity> GetBydIdAsync<TEntity>(Guid id)
+    Task<TEntity> GetByIdAsync<TEntity>(Guid id)
         where TEntity : Entity;
 
     /// <summary>

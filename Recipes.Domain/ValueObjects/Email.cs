@@ -13,16 +13,6 @@ public sealed class Email : ValueObject
     }
     public static Result<Email> Create(string value)
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            return Result.Failure<Email>(new Error("Email.EmptyOrNull", "Email is empty."));
-        }
-
-        if (value.Length > MaxLenght)
-        {
-            return Result.Failure<Email>(new Error("Email.TooLong", "Email is too long."));
-        }
-
         return new Email(value);
     }
     protected override IEnumerable<object> GetAtomicValues()

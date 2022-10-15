@@ -9,37 +9,28 @@ namespace Recipes.Api.Controllers.Authentification
     /// <summary>
     /// 
     /// </summary>
-    [ApiController]
     [Route("auth")]
-    public class AuthentificationController : Controller
+    public class AuthentificationController : ApiController
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        private readonly ISender _mediator;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="mediator"></param>
-        public AuthentificationController(ISender mediator)
+        public AuthentificationController(ISender sender) : base(sender)
         {
-            _mediator = mediator;
         }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
             var command = new RegisterCommand(request.FirstName, request.LastName, request.Email, request.Password);
-            var result = await _mediator.Send(command);
+            var result = await Sender.Send(command);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+            return result.IsSuccess ? Ok(result.Value) : HandleFailure(result);
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
             var command = new LoginQuery(request.Email, request.Password);
-            var result = await _mediator.Send(command);
+            var result = await Sender.Send(command);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+            return result.IsSuccess ? Ok(result.Value) : HandleFailure(result);
         }
     }
 }
