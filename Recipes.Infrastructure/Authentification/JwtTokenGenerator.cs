@@ -27,13 +27,13 @@ public class JwtTokenGenerator : IJwtTokenGenerator
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
             new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
-            new Claim(JwtRegisteredClaimNames.Jti, new Guid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
         var securityToken = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
-            expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpireMinutes),
+            expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
             claims: claims,
             signingCredentials: signInCreditials);
 

@@ -5,6 +5,7 @@ namespace Recipes.Domain.Entities;
 
 public sealed class Instruction : Entity, IAuditableEntity
 {
+    private Instruction() { }
     private Instruction(Guid id, Guid recipeId, int position, string text) : base(id)
     {
         RecipeId = recipeId;

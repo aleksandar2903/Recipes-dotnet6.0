@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Recipes.Domain.Primitives;
 using System.Linq.Expressions;
 
@@ -6,6 +8,9 @@ namespace Recipes.Application.Abstractions.Data;
 
 public interface IDbContext
 {
+    DatabaseFacade Database { get;  }
+    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Task CommitTransactionAsync(CancellationToken cancellationToken = default);
     /// <summary>
     /// Gets the database set for the specified entity type.
     /// </summary>

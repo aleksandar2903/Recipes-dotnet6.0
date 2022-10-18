@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Recipes.Domain\Recipes.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\Commands\Recipes\" />
+  </ItemGroup>
+
 </Project>

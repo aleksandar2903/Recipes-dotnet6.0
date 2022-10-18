@@ -29,7 +29,8 @@ public class ValidationPipelineBehaviour<TRequest, TResponse> : IPipelineBehavio
             .Where(validationFailure => validationFailure is not null)
             .Select(failure => new Error(
                 failure.ErrorCode,
-                failure.ErrorMessage))
+                failure.ErrorMessage,
+                failure.PropertyName))
             .Distinct()
             .ToArray();
 

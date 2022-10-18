@@ -1,14 +1,16 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Recipes.Application.Authentification.Commands.Register;
 using Recipes.Application.Authentification.Queries.Login;
 using Recipes.Contracts.Authentification;
 
-namespace Recipes.Api.Controllers.Authentification
+namespace Recipes.Presentation.Controllers.Authentification
 {
     /// <summary>
     /// 
     /// </summary>
+    [AllowAnonymous]
     [Route("auth")]
     public class AuthentificationController : ApiController
     {

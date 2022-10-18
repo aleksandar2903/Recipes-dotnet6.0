@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipes.Domain", "Recipes.Domain\Recipes.Domain.csproj", "{41A3CE4D-69B5-467A-BE6A-9BEB8F628ED1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipes.Domain", "Recipes.Domain\Recipes.Domain.csproj", "{41A3CE4D-69B5-467A-BE6A-9BEB8F628ED1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipes.Application", "Recipes.Application\Recipes.Application.csproj", "{DC744D5C-7FE6-4989-AECA-B1728714544F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipes.Application", "Recipes.Application\Recipes.Application.csproj", "{DC744D5C-7FE6-4989-AECA-B1728714544F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipes.Infrastructure", "Recipes.Infrastructure\Recipes.Infrastructure.csproj", "{09092E9A-8D61-4A26-9493-8D6C70891058}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipes.Infrastructure", "Recipes.Infrastructure\Recipes.Infrastructure.csproj", "{09092E9A-8D61-4A26-9493-8D6C70891058}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipes.Contracts", "Recipes.Contracts\Recipes.Contracts.csproj", "{5F5C44D0-93E5-4679-A3E0-37B49026170C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipes.Contracts", "Recipes.Contracts\Recipes.Contracts.csproj", "{5F5C44D0-93E5-4679-A3E0-37B49026170C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipes.Api", "Recipes.Api\Recipes.Api.csproj", "{DDE6B5EA-8A29-418D-A597-B91F124F6FDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipes.Api", "Recipes.Api\Recipes.Api.csproj", "{DDE6B5EA-8A29-418D-A597-B91F124F6FDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recipes.Presentation", "Presentation\Recipes.Presentation.csproj", "{ECB89BAB-B1FA-46D7-B419-4F6DB7BBBDBF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{DDE6B5EA-8A29-418D-A597-B91F124F6FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDE6B5EA-8A29-418D-A597-B91F124F6FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDE6B5EA-8A29-418D-A597-B91F124F6FDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECB89BAB-B1FA-46D7-B419-4F6DB7BBBDBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECB89BAB-B1FA-46D7-B419-4F6DB7BBBDBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECB89BAB-B1FA-46D7-B419-4F6DB7BBBDBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECB89BAB-B1FA-46D7-B419-4F6DB7BBBDBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

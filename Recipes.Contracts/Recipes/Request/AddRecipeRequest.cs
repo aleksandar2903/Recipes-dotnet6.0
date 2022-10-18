@@ -6,7 +6,7 @@ public record AddRecipeRequest(
     Uri videoUrl,
     Uri thumbnailUrl,
     int? numServings,
-    int? totalTimeMinutes,
+    int totalTimeMinutes,
     int? calories,
     List<Section> sections,
     List<Instruction> instructions);

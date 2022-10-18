@@ -1,10 +1,11 @@
 ﻿using Recipes.Domain.Primitives;
-using static System.Collections.Specialized.BitVector32;
+using Recipes.Domain.ValueObjects;
 
 namespace Recipes.Domain.Entities;
 
 public sealed class Section : Entity, IAuditableEntity
 {
+    private Section() { }
     private Section(Guid id, Guid recipeId, int position, string text, List<Ingredient> ingredients) : base(id)
     {
         RecipeId = recipeId;
@@ -27,5 +28,10 @@ public sealed class Section : Entity, IAuditableEntity
     public void AddIngredients(List<Ingredient> ingredients)
     {
         _ingredients.AddRange(ingredients);
+    }
+
+    public void UpdateText(string text)
+    {
+        Text = text;
     }
 }

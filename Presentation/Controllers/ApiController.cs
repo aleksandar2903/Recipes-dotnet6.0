@@ -1,10 +1,12 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Recipes.Domain.Shared;
-using System.Collections;
 
-namespace Recipes.Api.Controllers
+namespace Recipes.Presentation.Controllers
 {
+    [Authorize]
     [ApiController]
     public class ApiController : Controller
     {

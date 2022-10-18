@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Recipes.Application.Abstractions.Data;
 using Recipes.Domain.Primitives;
 using System.Reflection;
-using Recipes.Domain.Entities;
 using Recipes.Infrastructure.Extensions;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Transactions;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Recipes.Infrastructure
 {
@@ -16,7 +18,6 @@ namespace Recipes.Infrastructure
             : base(options)
         {
         }
-        public DbSet<User> Users { get; set; }
 
         /// <inheritdoc />
         public new DbSet<TEntity> Set<TEntity>()
@@ -59,6 +60,8 @@ namespace Recipes.Infrastructure
             return await base.SaveChangesAsync(cancellationToken);
         }
 
+        
+
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -87,6 +90,15 @@ namespace Recipes.Infrastructure
                     entityEntry.Property(nameof(IAuditableEntity.ModifiedOnUtc)).CurrentValue = DateTime.UtcNow;
                 }
             }
+        }
+        public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            return await Database.BeginTransactionAsync(cancellationToken);
+        }
+
+        public Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            return Database.CommitTransactionAsync(cancellationToken);
         }
     }
 }

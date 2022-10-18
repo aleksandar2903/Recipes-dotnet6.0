@@ -7,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddApplication().
         AddInfrastructure(builder.Configuration);
-    builder.Services.AddControllers();
+    var presentationAssembly = typeof(Recipes.Presentation.AssemblyReference).Assembly;
+    builder.Services.AddControllers().AddApplicationPart(presentationAssembly);
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -24,6 +25,7 @@ var app = builder.Build();
 
     app.UseHttpsRedirection();
 
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
