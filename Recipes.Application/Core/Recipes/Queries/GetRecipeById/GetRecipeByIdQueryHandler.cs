@@ -35,16 +35,19 @@ public class GetRecipeByIdQueryHandler : IRequestHandler<GetRecipeByIdQuery, Res
                 recipe.CreatedOnUtc,
                 recipe.Sections.OrderBy(order => order.Position)
                 .Select(section => new SectionResponse(
+                    section.Id,
                     section.Position,
                     section.Text,
                     section.Ingredients.OrderBy(order => order.Position)
                     .Select(ingredient => new IngredientResponse(
+                        ingredient.Id,
                         ingredient.Position,
                         ingredient.Text
                         )).ToList()
                     )).ToList(),
                 recipe.Instructions.OrderBy(order => order.Position)
                 .Select(instruction => new InstructionResponse(
+                    instruction.Id,
                     instruction.Position,
                     instruction.Text
                     )).ToList()

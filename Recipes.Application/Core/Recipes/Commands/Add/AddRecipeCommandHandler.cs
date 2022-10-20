@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Recipes.Application.Abstractions.Data;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Errors;
@@ -22,20 +23,28 @@ public class AddRecipeCommandHandler : IRequestHandler<AddRecipeCommand, Result<
             return Result.Failure<Guid>(DomainErrors.User.UserNotFound);
         }
 
-        User user = await _dbContext.GetByIdAsync<User>(userId);
-
-        if(user is null)
+        if (!(await _dbContext.Set<User>()
+            .AnyAsync(user => user.Id == userId, cancellationToken)))
         {
             return Result.Failure<Guid>(DomainErrors.User.UserNotFound);
         }
 
-        Guid recipeId = Guid.NewGuid();
-        Guid sectionId = Guid.NewGuid();
+        var recipe = MapRecipeRequestToDomainEntity(request, userId);
+
+        _dbContext.Insert(recipe);
+
+        await _dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
+
+        return Result.Success(recipe.Id);
+    }
+
+    private Recipe MapRecipeRequestToDomainEntity(AddRecipeCommand request, Guid userId)
+    {
         int sectionPosition = 0;
         int instructionPosition = 0;
-
-        var recipe = user.AddRecipe(
-            recipeId,
+        return Recipe.Create(
+            Guid.Empty,
+            userId,
             request.Title,
             request.Description,
             request.VideoUrl,
@@ -45,30 +54,23 @@ public class AddRecipeCommandHandler : IRequestHandler<AddRecipeCommand, Result<
             request.Calories,
             request.Sections.Select(section =>
             {
-                Guid sectionId = Guid.NewGuid();
                 int ingredientPosition = 0;
                 return Section.Create(
-                    sectionId,
-                    recipeId,
-                    sectionPosition++,
+                    Guid.Empty,
+                    Guid.Empty,
+                    ++sectionPosition,
                     section.Text,
                     section.Ingredients.Select(ingredient => Ingredient.Create(
-                        Guid.NewGuid(), 
-                        sectionId, 
-                        ingredientPosition, 
+                        Guid.Empty,
+                        Guid.Empty,
+                        ++ingredientPosition,
                         ingredient.Text)).ToList());
             }).ToList(),
             request.Instructions.Select(instruction =>
                 Instruction.Create(
-                    Guid.NewGuid(),
-                    recipeId,
-                    instructionPosition++,
+                    Guid.Empty,
+                    Guid.Empty,
+                    ++instructionPosition,
                     instruction.Text)).ToList());
-
-        _dbContext.Insert(recipe);
-
-        await _dbContext.SaveChangesAsync(cancellationToken: cancellationToken);
-
-        return Result.Success(recipeId);
     }
 }

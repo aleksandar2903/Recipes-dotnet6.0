@@ -23,4 +23,10 @@ public sealed class Instruction : Entity, IAuditableEntity
     {
         return new Instruction(id, recipeId, position, text);
     }
+
+    public void UpdateInformations(int position, string text)
+    {
+        Position = position;
+        Text = text;
+    }
 }

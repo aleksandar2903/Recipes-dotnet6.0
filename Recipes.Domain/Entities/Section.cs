@@ -1,5 +1,4 @@
 ﻿using Recipes.Domain.Primitives;
-using Recipes.Domain.ValueObjects;
 
 namespace Recipes.Domain.Entities;
 
@@ -13,7 +12,7 @@ public sealed class Section : Entity, IAuditableEntity
         Text = text;
         _ingredients = ingredients;
     }
-    private readonly List<Ingredient> _ingredients = new();
+    private List<Ingredient> _ingredients = new();
     public string Text { get; private set; } = string.Empty;
     public int Position { get; private set; }
     public Guid RecipeId { get; private set; }
@@ -25,13 +24,20 @@ public sealed class Section : Entity, IAuditableEntity
     {
         return new Section(id, recipeId, position, text, ingredients);
     }
-    public void AddIngredients(List<Ingredient> ingredients)
+    public Ingredient AddIngredient(Guid id, int position, string text)
     {
-        _ingredients.AddRange(ingredients);
+        var ingredient = Ingredient.Create(id, Id, position, text);
+        _ingredients.Add(ingredient);
+        return ingredient;
+    }
+    public void RemoveIngredient(Ingredient ingredient)
+    {
+        _ingredients.Remove(ingredient);
     }
 
-    public void UpdateText(string text)
+    public void UpdateInformations(int position, string text)
     {
+        Position = position;
         Text = text;
     }
 }

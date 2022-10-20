@@ -10,4 +10,9 @@ public class DomainErrors
         public static readonly Error DuplicateUser = new Error("User.DuplicateUser", "User already exists.");
         public static readonly Error InvalidPassword = new Error("User.InvalidPassword", "Entered password is invalid.");
     }
+
+    public static class Recipe
+    {
+        public static readonly Error RecipeNotFound = new Error("Recipe.NotFound", "Recipe with specific Id doesn't exist.");
+    }
 }

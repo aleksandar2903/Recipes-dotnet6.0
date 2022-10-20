@@ -46,7 +46,7 @@ public sealed class User : Entity, IAuditableEntity
     {
         var recipe = Recipe.Create(
             id, 
-            this, 
+            Id, 
             title,
             description, 
             videoUrl, 

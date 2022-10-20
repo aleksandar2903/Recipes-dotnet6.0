@@ -10,6 +10,6 @@ public record AddRecipeRequest(
     int? calories,
     List<Section> sections,
     List<Instruction> instructions);
-public record Section(int position, string text, List<Ingredient> ingredients);
-public record Instruction(int position, string text);
-public record Ingredient(int position, string text);
+public record Section(Guid? Id, int position, string text, List<Ingredient> ingredients);
+public record Instruction(Guid? Id, int position, string text);
+public record Ingredient(Guid? Id, int position, string text);

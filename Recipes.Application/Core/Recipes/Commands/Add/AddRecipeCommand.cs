@@ -13,6 +13,6 @@ public record AddRecipeCommand(
     int? Calories,
     IReadOnlyCollection<SectionRequest> Sections,
     IReadOnlyCollection<InstructionRequest> Instructions) : ICommand<Guid>;
-public record SectionRequest(string Text, List<IngredientRequest> Ingredients);
-public record InstructionRequest(string Text);
-public record IngredientRequest(string Text);
+public record SectionRequest(Guid? Id, string Text, List<IngredientRequest> Ingredients);
+public record InstructionRequest(Guid? Id, string Text);
+public record IngredientRequest(Guid? Id, string Text);

@@ -25,7 +25,7 @@ public interface IDbContext
     /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="expression">The entity expression.</param>
     /// <returns>The maybe instance that may contain the <typeparamref name="TEntity"/> with the specified identifier.</returns>
-    Task<TEntity> GetByAsync<TEntity>(Expression<Func<TEntity, bool>> expression)
+    Task<TEntity> GetByAsync<TEntity>(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
         where TEntity : Entity;
 
     /// <summary>
@@ -34,7 +34,7 @@ public interface IDbContext
     /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="id">The entity identifier.</param>
     /// <returns>The maybe instance that may contain the <typeparamref name="TEntity"/> with the specified identifier.</returns>
-    Task<TEntity> GetByIdAsync<TEntity>(Guid id)
+    Task<TEntity> GetByIdAsync<TEntity>(Guid id, CancellationToken cancellationToken = default)
         where TEntity : Entity;
 
     /// <summary>

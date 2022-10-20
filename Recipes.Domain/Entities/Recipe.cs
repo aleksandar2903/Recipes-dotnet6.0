@@ -1,5 +1,7 @@
-﻿using Recipes.Domain.Primitives;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Recipes.Domain.Primitives;
 using Recipes.Domain.Shared;
+using System.Security.AccessControl;
 
 namespace Recipes.Domain.Entities;
 
@@ -49,7 +51,7 @@ public sealed class Recipe : Entity, IAuditableEntity
 
     public static Recipe Create(
         Guid id,
-        User author,
+        Guid authorId,
         string title,
         string description,
         Uri? videoUrl,
@@ -62,7 +64,7 @@ public sealed class Recipe : Entity, IAuditableEntity
     {
         return new Recipe(
             id,
-            author.Id,
+            authorId,
             title,
             description,
             videoUrl,
@@ -73,16 +75,51 @@ public sealed class Recipe : Entity, IAuditableEntity
             sections,
             instructions);
     }
-    public void RemoveSections()
+    public void UpdateInformations(
+       string title,
+       string description,
+       Uri? videoUrl,
+       Uri thumbnailUrl,
+       int? numServings,
+       int totalTimeMinutes,
+       int? calories)
     {
-        _sections.Clear();
+        Title = title;
+        Description = description;
+        VideoUrl = videoUrl;
+        ThumbnailUrl = thumbnailUrl;
+        NumServings = numServings;
+        TotalTimeMinutes = totalTimeMinutes;
+        Calories = calories;
     }
-    public void AddSections(List<Section> sections)
+
+    public Instruction AddInstruction(Guid id, int position, string text)
     {
-        _sections.AddRange(sections);
+        var instruction = Instruction.Create(id, Id, position, text);
+
+        _instructions.Add(instruction);
+
+        return instruction;
     }
-    public void AddInstructions(List<Instruction> instructions)
+    public void RemoveInstruction(Instruction instruction)
     {
-        _instructions.AddRange(instructions);
+        _instructions.Remove(instruction);
+    }
+    public void RemoveInstruction(Section section)
+    {
+        _sections.Remove(section);
+    }
+    public Section AddSection(Guid id, int position, string text, List<Ingredient> ingredients)
+    {
+        var section = Section.Create(id, Id, position, text, ingredients);
+
+        _sections.Add(section);
+
+        return section;
+    }
+
+    public void RemoveSection(Section section)
+    {
+        _sections.Remove(section);
     }
 }

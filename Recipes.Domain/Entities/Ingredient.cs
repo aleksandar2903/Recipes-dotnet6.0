@@ -22,8 +22,9 @@ public sealed class Ingredient : Entity, IAuditableEntity
     {
         return new Ingredient(id, sectionId, position, text);
     }
-    public void UpdateText(string text)
+    public void UpdateInformations(int position, string text)
     {
+        Position = position;
         Text = text;
     }
 }

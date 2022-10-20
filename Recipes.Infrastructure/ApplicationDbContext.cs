@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Threading;
 
 namespace Recipes.Infrastructure
 {
@@ -25,17 +26,19 @@ namespace Recipes.Infrastructure
             base.Set<TEntity>();
 
         /// <inheritdoc />
-        public async Task<TEntity> GetByAsync<TEntity>(Expression<Func<TEntity, bool>> expression)
+        public async Task<TEntity> GetByAsync<TEntity>(Expression<Func<TEntity,
+            bool>> expression, CancellationToken cancellationToken = default)
             where TEntity : Entity
         {
-            return await Set<TEntity>().FirstOrDefaultAsync(expression);
+            return await Set<TEntity>().FirstOrDefaultAsync(expression, cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task<TEntity> GetByIdAsync<TEntity>(Guid id)
+        public async Task<TEntity> GetByIdAsync<TEntity>(Guid id,
+            CancellationToken cancellationToken = default)
             where TEntity : Entity
         {
-            return await Set<TEntity>().FirstOrDefaultAsync(e => e.Id == id);
+            return await Set<TEntity>().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -91,9 +94,9 @@ namespace Recipes.Infrastructure
                 }
             }
         }
-        public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
-            return await Database.BeginTransactionAsync(cancellationToken);
+            return Database.BeginTransactionAsync(cancellationToken);
         }
 
         public Task CommitTransactionAsync(CancellationToken cancellationToken = default)

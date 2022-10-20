@@ -14,6 +14,6 @@ public record RecipeInformationsResponse(
     IReadOnlyCollection<SectionResponse> Sections,
     IReadOnlyCollection<InstructionResponse> Instructions);
 public record AuthorResponse(Guid Id, string FullName);
-public record IngredientResponse(int Position, string Text);
-public record SectionResponse(int Position, string Text, IReadOnlyCollection<IngredientResponse> Ingredients);
-public record InstructionResponse(int Position, string Text);
+public record IngredientResponse(Guid Id, int Position, string Text);
+public record SectionResponse(Guid Id, int Position, string Text, IReadOnlyCollection<IngredientResponse> Ingredients);
+public record InstructionResponse(Guid Id, int Position, string Text);
