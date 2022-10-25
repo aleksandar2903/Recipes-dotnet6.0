@@ -1,12 +1,11 @@
 ﻿using Recipes.Domain.Primitives;
-using Recipes.Domain.ValueObjects;
 
 namespace Recipes.Domain.Entities;
 
-public sealed class Instruction : Entity, IAuditableEntity
+public class Instruction : Entity, IAuditableEntity
 {
     private Instruction() { }
-    private Instruction(Guid id, Guid recipeId, int position, string text) : base(id)
+    internal Instruction(Guid id, Guid recipeId, int position, string text) : base(id)
     {
         RecipeId = recipeId;
         Position = position;
@@ -19,12 +18,7 @@ public sealed class Instruction : Entity, IAuditableEntity
     public DateTime CreatedOnUtc { get; private set; }
     public DateTime? ModifiedOnUtc { get; private set; }
 
-    public static Instruction Create(Guid id, Guid recipeId, int position, string text)
-    {
-        return new Instruction(id, recipeId, position, text);
-    }
-
-    public void UpdateInformations(int position, string text)
+    internal void UpdateInformations(int position, string text)
     {
         Position = position;
         Text = text;

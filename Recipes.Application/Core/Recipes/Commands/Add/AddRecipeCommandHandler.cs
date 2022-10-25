@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Recipes.Application.Abstractions.Data;
+using Recipes.Application.Common.Interfaces.Authentification;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Errors;
 using Recipes.Domain.Shared;
@@ -9,27 +10,24 @@ namespace Recipes.Application.Core.Recipes.Commands.Add;
 
 public class AddRecipeCommandHandler : IRequestHandler<AddRecipeCommand, Result<Guid>>
 {
+    private readonly IUserIdentifierProvider _userIdentifierProvider;
     private readonly IDbContext _dbContext;
 
-    public AddRecipeCommandHandler(IDbContext dbContext)
+    public AddRecipeCommandHandler(IDbContext dbContext, IUserIdentifierProvider userIdentifierProvider)
     {
         _dbContext = dbContext;
+        _userIdentifierProvider = userIdentifierProvider;
     }
 
     public async Task<Result<Guid>> Handle(AddRecipeCommand request, CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(request.UserId, out Guid userId))
-        {
-            return Result.Failure<Guid>(DomainErrors.User.UserNotFound);
-        }
-
         if (!(await _dbContext.Set<User>()
-            .AnyAsync(user => user.Id == userId, cancellationToken)))
+            .AnyAsync(user => user.Id == _userIdentifierProvider.UserId, cancellationToken)))
         {
-            return Result.Failure<Guid>(DomainErrors.User.UserNotFound);
+            return Result.Failure<Guid>(DomainErrors.User.NotFound);
         }
 
-        var recipe = MapRecipeRequestToDomainEntity(request, userId);
+        var recipe = MapRecipeRequestToDomainEntity(request, _userIdentifierProvider.UserId);
 
         _dbContext.Insert(recipe);
 
@@ -40,8 +38,6 @@ public class AddRecipeCommandHandler : IRequestHandler<AddRecipeCommand, Result<
 
     private Recipe MapRecipeRequestToDomainEntity(AddRecipeCommand request, Guid userId)
     {
-        int sectionPosition = 0;
-        int instructionPosition = 0;
         return Recipe.Create(
             Guid.Empty,
             userId,
@@ -53,24 +49,15 @@ public class AddRecipeCommandHandler : IRequestHandler<AddRecipeCommand, Result<
             request.TotalTimeMinutes,
             request.Calories,
             request.Sections.Select(section =>
-            {
-                int ingredientPosition = 0;
-                return Section.Create(
+                Domain.ValueObjects.Section.Create(
                     Guid.Empty,
-                    Guid.Empty,
-                    ++sectionPosition,
                     section.Text,
-                    section.Ingredients.Select(ingredient => Ingredient.Create(
+                    section.Ingredients.Select(ingredient => Domain.ValueObjects.Ingredient.Create(
                         Guid.Empty,
-                        Guid.Empty,
-                        ++ingredientPosition,
-                        ingredient.Text)).ToList());
-            }).ToList(),
+                        ingredient.Text).Value).ToList()).Value).ToList(),
             request.Instructions.Select(instruction =>
-                Instruction.Create(
+                Domain.ValueObjects.Instruction.Create(
                     Guid.Empty,
-                    Guid.Empty,
-                    ++instructionPosition,
-                    instruction.Text)).ToList());
+                    instruction.Text).Value).ToList());
     }
 }

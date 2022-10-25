@@ -1,11 +1,11 @@
 ﻿using Recipes.Domain.Primitives;
-using Recipes.Domain.Shared;
 using Recipes.Domain.ValueObjects;
 
 namespace Recipes.Domain.Entities;
 
-public sealed class User : Entity, IAuditableEntity
+public sealed class User : AggregateRoot, IAuditableEntity
 {
+    private User(Guid id) : base(id) { }
     private User(Guid id, string firstName, string lastName, string email, string passwordHash) : base(id)
     {
         FirstName = firstName;
@@ -30,35 +30,5 @@ public sealed class User : Entity, IAuditableEntity
     public bool IsPasswordMatched(Password passwordHash)
     {
         return PasswordHash == passwordHash.Value;
-    }
-
-    public Recipe AddRecipe(
-        Guid id,
-        string title,
-        string description,
-        Uri videoUrl,
-        Uri thumbnailUrl,
-        int? numServings,
-        int totalTimeMinutes,
-        int? calories,
-        List<Section> sections,
-        List<Instruction> instructions)
-    {
-        var recipe = Recipe.Create(
-            id, 
-            Id, 
-            title,
-            description, 
-            videoUrl, 
-            thumbnailUrl, 
-            numServings, 
-            totalTimeMinutes, 
-            calories, 
-            sections, 
-            instructions);
-
-        _recipes.Add(recipe);
-
-        return recipe;
     }
 }

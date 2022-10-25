@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Recipes.Application.Abstractions.Data;
 using Recipes.Application.Contracts.Queries.Recipes;
 using Recipes.Domain.Entities;
+using Recipes.Domain.Errors;
 using Recipes.Domain.Shared;
 
 namespace Recipes.Application.Core.Recipes.Queries.GetRecipeById;
@@ -53,9 +54,12 @@ public class GetRecipeByIdQueryHandler : IRequestHandler<GetRecipeByIdQuery, Res
                     )).ToList()
                 )).FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
-        if(recipe is null)
+        if (recipe is null)
         {
-            return Result.Failure<RecipeInformationsResponse>(new Error("Recipe.NotFound", "Recipe doesn't exist."));
+            return Result.Failure<RecipeInformationsResponse>
+                (
+                    DomainErrors.Recipe.NotFound
+                );
         }
 
         return recipe;

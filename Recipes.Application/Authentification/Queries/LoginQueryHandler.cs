@@ -29,7 +29,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, Result<Authentifica
 
         if (user is null)
         {
-            return Result.Failure<AuthentificationResult>(DomainErrors.User.UserNotFound);
+            return Result.Failure<AuthentificationResult>(DomainErrors.User.NotFound);
         }
 
         // Check does password match user password in database

@@ -5,7 +5,7 @@ namespace Recipes.Domain.Entities;
 public sealed class Ingredient : Entity, IAuditableEntity
 {
     private Ingredient() { }
-    private Ingredient(Guid id, Guid sectionId, int position, string text) : base(id)
+    internal Ingredient(Guid id, Guid sectionId, int position, string text) : base(id)
     {
         SectionId = sectionId;
         Position = position;
@@ -17,12 +17,7 @@ public sealed class Ingredient : Entity, IAuditableEntity
     public Guid SectionId { get; private set; }
     public DateTime CreatedOnUtc { get; private set; }
     public DateTime? ModifiedOnUtc { get; private set; }
-
-    public static Ingredient Create(Guid id, Guid sectionId, int position, string text)
-    {
-        return new Ingredient(id, sectionId, position, text);
-    }
-    public void UpdateInformations(int position, string text)
+    internal void UpdateInformations(int position, string text)
     {
         Position = position;
         Text = text;

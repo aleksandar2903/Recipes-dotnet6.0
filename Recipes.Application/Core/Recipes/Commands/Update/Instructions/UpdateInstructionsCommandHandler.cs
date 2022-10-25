@@ -1,65 +1,47 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Recipes.Application.Abstractions.Data;
-using Recipes.Application.Core.Recipes.Commands.Add;
+using Recipes.Application.Common.Interfaces.Authentification;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Errors;
 using Recipes.Domain.Shared;
+using InstructionValueObject =  Recipes.Domain.ValueObjects.Instruction;
 
 namespace Recipes.Application.Core.Recipes.Commands.Update.Instructions;
 
 public sealed class UpdateInstructionsCommandHandler : IRequestHandler<UpdateInstructionsCommand, Result>
 {
     private readonly IDbContext _dbContext;
+    private readonly IUserIdentifierProvider _userIdentifierProvider;
 
-    public UpdateInstructionsCommandHandler(IDbContext dbContext)
+    public UpdateInstructionsCommandHandler(IDbContext dbContext, IUserIdentifierProvider userIdentifierProvider)
     {
         _dbContext = dbContext;
+        _userIdentifierProvider = userIdentifierProvider;
     }
     public async Task<Result> Handle(UpdateInstructionsCommand request, CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(request.UserId, out Guid userId))
-        {
-            return Result.Failure(DomainErrors.User.UserNotFound);
-        }
-
         if (!await _dbContext.Set<User>()
-            .AnyAsync(user => user.Id == userId, cancellationToken))
+            .AnyAsync(user => user.Id == _userIdentifierProvider.UserId, cancellationToken))
         {
-            return Result.Failure(DomainErrors.User.UserNotFound);
+            return Result.Failure(DomainErrors.User.NotFound);
         }
 
         Recipe recipe = await _dbContext.Set<Recipe>().Where(recipe =>
-            recipe.Id == request.RecipeId && recipe.AuthorId == userId)
+            recipe.Id == request.RecipeId && recipe.AuthorId == _userIdentifierProvider.UserId)
             .Include(i => i.Instructions)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (recipe is null)
         {
-            return Result.Failure(DomainErrors.Recipe.RecipeNotFound);
+            return Result.Failure(DomainErrors.Recipe.NotFound);
         }
-        //Remove exist instructions
-        foreach (var instruction in recipe.Instructions.ToList())
-        {
-            if (!request.Instructions.Any(i => i.Id == instruction.Id))
-            {
-                recipe.RemoveInstruction(instruction);
-            }
-        }
-        //Create new or update exist instructions
-        int position = 0;
-        foreach (var instruction in request.Instructions)
-        {
-            Instruction existsInstruction = recipe.Instructions.FirstOrDefault(i => i.Id == instruction.Id);
-            if (existsInstruction is not null)
-            {
-                existsInstruction.UpdateInformations(++position, instruction.Text);
-            }
-            else
-            {
-                recipe.AddInstruction(Guid.Empty, ++position, instruction.Text);
-            }
-        }
+
+        recipe.UpdateInstructions(request.Instructions.
+            Select(instruction =>
+            InstructionValueObject.Create(
+                instruction.Id,
+                instruction.Text).Value).ToList());
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

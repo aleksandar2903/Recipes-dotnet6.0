@@ -1,11 +1,12 @@
 ﻿using Recipes.Domain.Primitives;
+using Recipes.Domain.ValueObjects;
 
 namespace Recipes.Domain.Entities;
 
 public sealed class Section : Entity, IAuditableEntity
 {
     private Section() { }
-    private Section(Guid id, Guid recipeId, int position, string text, List<Ingredient> ingredients) : base(id)
+    internal Section(Guid id, Guid recipeId, int position, string text, List<Ingredient> ingredients) : base(id)
     {
         RecipeId = recipeId;
         Position = position;
@@ -19,23 +20,18 @@ public sealed class Section : Entity, IAuditableEntity
     public DateTime CreatedOnUtc { get; private set; }
     public DateTime? ModifiedOnUtc { get; private set; }
     public IReadOnlyCollection<Ingredient> Ingredients => _ingredients;
-
-    public static Section Create(Guid id, Guid recipeId, int position, string text, List<Ingredient> ingredients)
-    {
-        return new Section(id, recipeId, position, text, ingredients);
-    }
     public Ingredient AddIngredient(Guid id, int position, string text)
     {
-        var ingredient = Ingredient.Create(id, Id, position, text);
+        var ingredient = new Ingredient(id, Id, position, text);
         _ingredients.Add(ingredient);
         return ingredient;
     }
-    public void RemoveIngredient(Ingredient ingredient)
+    internal void RemoveIngredients(IReadOnlyCollection<ValueObjects.Ingredient> ingredients)
     {
-        _ingredients.Remove(ingredient);
+        _ingredients.RemoveAll(ingredient => !ingredients.Any(i => i.Id == ingredient.Id));
     }
 
-    public void UpdateInformations(int position, string text)
+    internal void UpdateInformations(int position, string text)
     {
         Position = position;
         Text = text;

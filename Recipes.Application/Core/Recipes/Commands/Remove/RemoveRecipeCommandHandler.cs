@@ -18,13 +18,13 @@ namespace Recipes.Application.Core.Recipes.Commands.Remove
         {
             if (!Guid.TryParse(request.UserId, out Guid userId))
             {
-                return Result.Failure(DomainErrors.User.UserNotFound);
+                return Result.Failure(DomainErrors.User.NotFound);
             }
 
             if (!(await _dbContext.Set<User>()
                 .AnyAsync(user => user.Id == userId, cancellationToken)))
             {
-                return Result.Failure(DomainErrors.User.UserNotFound);
+                return Result.Failure(DomainErrors.User.NotFound);
             }
 
             Recipe recipe = await _dbContext.GetByAsync<Recipe>(recipe =>
@@ -32,7 +32,7 @@ namespace Recipes.Application.Core.Recipes.Commands.Remove
 
             if (recipe is null)
             {
-                return Result.Failure(DomainErrors.Recipe.RecipeNotFound);
+                return Result.Failure(DomainErrors.Recipe.NotFound);
             }
 
             _dbContext.Remove(recipe);

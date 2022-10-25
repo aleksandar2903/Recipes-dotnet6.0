@@ -29,7 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
         services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options => options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = true,
                 ValidateIssuer = true,
@@ -40,6 +40,8 @@ public static class DependencyInjection
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(JwtSettings.Secret))
             });
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserIdentifierProvider, UserIdentifierProvider>();
         return services;
     }
 }

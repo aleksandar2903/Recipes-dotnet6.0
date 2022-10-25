@@ -3,7 +3,6 @@
 namespace Recipes.Application.Core.Recipes.Commands.Add;
 
 public record AddRecipeCommand(
-    string? UserId,
     string Title,
     string Description,
     Uri? VideoUrl,

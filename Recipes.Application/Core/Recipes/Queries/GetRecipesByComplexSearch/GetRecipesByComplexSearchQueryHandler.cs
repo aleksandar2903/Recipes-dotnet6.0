@@ -22,27 +22,28 @@ public sealed class GetRecipesByComplexSearchQueryHandler
         CancellationToken cancellationToken)
     {
         IQueryable<Recipe> query = _dbContext.Set<Recipe>();
+
         if (!string.IsNullOrWhiteSpace(request.Query))
         {
             query = query.Where(recipe => recipe.Title!.Contains(request.Query));
         }
 
-        if (request.MaxTotalTimeMinutes is not null && request.MaxTotalTimeMinutes > 0)
+        if (request.MaxTotalTimeMinutes is not null and > 0)
         {
             query = query.Where(recipe => recipe.TotalTimeMinutes <= request.MaxTotalTimeMinutes);
         }
 
-        if (request.NumServings is not null && request.NumServings > 0)
+        if (request.NumServings is not null and > 0)
         {
             query = query.Where(recipe => recipe.NumServings == request.NumServings);
         }
 
-        if (request.MinCalories is not null && request.MinCalories > 0)
+        if (request.MinCalories is not null and > 0)
         {
             query = query.Where(recipe => recipe.Calories >= request.MinCalories);
         }
 
-        if (request.MaxCalories is not null && request.MaxCalories > 0)
+        if (request.MaxCalories is not null and > 0)
         {
             query = query.Where(recipe => recipe.Calories <= request.MaxCalories);
         }
@@ -76,8 +77,8 @@ public sealed class GetRecipesByComplexSearchQueryHandler
 
         return await PagedList<RecipeResponse>.ToPagedList(
             queryDTO,
-            request.PageNumber,
-            request.PageSize,
+            request.PageNumber ?? 20,
+            request.PageSize ?? 1,
             cancellationToken);
     }
 }

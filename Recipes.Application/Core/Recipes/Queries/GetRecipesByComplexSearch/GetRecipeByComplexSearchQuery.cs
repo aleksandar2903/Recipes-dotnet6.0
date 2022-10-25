@@ -12,6 +12,6 @@ public record GetRecipeByComplexSearchQuery(
     int? MaxCalories, 
     string? Sort, 
     string? SortDirection, 
-    int PageNumber = 1, 
-    int PageSize = 20) 
+    int? PageNumber = 1, 
+    int? PageSize = 20) 
     : IQuery<PagedList<RecipeResponse>>;
