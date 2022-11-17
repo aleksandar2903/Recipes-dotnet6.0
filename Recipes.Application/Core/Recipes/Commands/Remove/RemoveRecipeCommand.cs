@@ -2,4 +2,4 @@
 
 namespace Recipes.Application.Core.Recipes.Commands.Remove;
 
-public sealed record RemoveRecipeCommand(string? UserId, Guid RecipeId) : ICommand;
+public sealed record RemoveRecipeCommand(Guid RecipeId) : ICommand;

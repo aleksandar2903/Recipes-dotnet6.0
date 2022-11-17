@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Recipes.Application.Core.Recipes.Commands.Add;
+using Recipes.Application.Core.Recipes.Commands.Common.Validation;
 
 namespace Recipes.Application.Core.Recipes.Commands.Update.Instructions;
 
@@ -7,6 +7,6 @@ public sealed class UpdateInstructionsCommandValidator : AbstractValidator<Updat
 {
 	public UpdateInstructionsCommandValidator()
 	{
-		RuleForEach(instructions => instructions.Instructions).SetValidator(new AddInstructionValidation());
+		RuleForEach(instructions => instructions.Instructions).SetValidator(new InstructionValidator());
 	}
 }

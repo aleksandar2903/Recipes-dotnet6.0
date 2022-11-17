@@ -1,9 +1,9 @@
 ﻿using Recipes.Application.Abstractions.Messaging;
+using Recipes.Application.Core.Recipes.Commands.Common.Request;
 
 namespace Recipes.Application.Core.Recipes.Commands.Update;
 
 public sealed record UpdateRecipeCommand(
-    string? UserId,
     Guid? RecipeId,
     string Title,
     string Description,
@@ -11,4 +11,11 @@ public sealed record UpdateRecipeCommand(
     Uri ThumbnailUrl,
     int? NumServings,
     int TotalTimeMinutes,
-    int? Calories) : ICommand;
+    int? Calories) : Recipe(
+        Title,
+        Description,
+        VideoUrl,
+        ThumbnailUrl,
+        NumServings,
+        TotalTimeMinutes,
+        Calories), ICommand;

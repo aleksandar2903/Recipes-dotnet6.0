@@ -22,6 +22,8 @@ namespace Recipes.Presentation.Controllers
             return result switch
             {
                 { IsSuccess: true } => throw new InvalidOperationException(),
+                { Error.Code: "Recipe.NotFound"} => NotFound(
+                    CreateProblemDetails("Not Found", StatusCodes.Status404NotFound, result.Error)),
                 IValidateResult validateResult =>
                     BadRequest(
                         CreateProblemDetails("Validation Error",

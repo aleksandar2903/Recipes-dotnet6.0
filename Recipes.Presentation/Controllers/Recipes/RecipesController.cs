@@ -6,6 +6,7 @@ using Recipes.Application.Core.Recipes.Commands.Remove;
 using Recipes.Application.Core.Recipes.Commands.Update;
 using Recipes.Application.Core.Recipes.Commands.Update.Instructions;
 using Recipes.Application.Core.Recipes.Commands.Update.Sections;
+using Recipes.Application.Core.Recipes.Queries.GetPopularRecipes;
 using Recipes.Application.Core.Recipes.Queries.GetRecipeById;
 using Recipes.Application.Core.Recipes.Queries.GetRecipesByComplexSearch;
 using Recipes.Contracts.Recipes.Request;
@@ -63,9 +64,9 @@ public class RecipesController : ApiController
         CancellationToken cancellationToken)
     {
         var recipeQuery = new GetRecipeByComplexSearchQuery(
-            query, 
-            numServings, 
-            maxTotalTimeMinutes, 
+            query,
+            numServings,
+            maxTotalTimeMinutes,
             minCalories,
             maxCalories,
             sort,
@@ -73,6 +74,15 @@ public class RecipesController : ApiController
             pageNumber,
             pageSize);
         var result = await Sender.Send(recipeQuery, cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : HandleFailure(result);
+    }
+    [AllowAnonymous]
+    [HttpGet("popular")]
+    public async Task<IActionResult> GetPopularRecipes(
+        CancellationToken cancellationToken)
+    {
+        var result = await Sender.Send(new GetPopularRecipesQuery(), cancellationToken);
 
         return result.IsSuccess ? Ok(result.Value) : HandleFailure(result);
     }
@@ -85,8 +95,18 @@ public class RecipesController : ApiController
     [HttpPost]
     public async Task<IActionResult> AddRecipe(AddRecipeRequest request, CancellationToken cancellationToken)
     {
-        var command = new AddRecipeCommand(request.title, request.description, request.videoUrl, request.thumbnailUrl, request.numServings, request.totalTimeMinutes, request.calories, request.sections.Select(s => new Application.Core.Recipes.Commands.Add.SectionRequest(s.Id, s.text, s.ingredients.Select(i => new Application.Core.Recipes.Commands.Add.IngredientRequest(i.Id, i.text)).ToList())).ToList(), 
-            request.instructions.Select(i => new Application.Core.Recipes.Commands.Add.InstructionRequest(i.Id, i.text)).ToList());
+        var command = new AddRecipeCommand(
+            request.Title,
+            request.Description,
+            request.VideoUrl,
+            request.ThumbnailUrl,
+            request.NumServings,
+            request.TotalTimeMinutes,
+            request.Calories,
+            request.Sections.Select(s => new AddSection(
+                s.Text, 
+                s.Ingredients.Select(i => new AddIngredient(i.Text)).ToList())).ToList(),
+            request.Instructions.Select(i => new AddInstruction(i.Text)).ToList());
         var result = await Sender.Send(command, cancellationToken);
         if (result.IsSuccess)
         {
@@ -102,9 +122,17 @@ public class RecipesController : ApiController
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
     [HttpPatch("{recipeId:guid}")]
-    public async Task<IActionResult> UpdateRecipe(UpdateRecipeCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateRecipe(Guid recipeId, UpdateRecipeRequest request, CancellationToken cancellationToken)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var command = new UpdateRecipeCommand(
+            recipeId,
+            request.Title,
+            request.Description,
+            request.VideoUrl,
+            request.ThumbnailUrl,
+            request.NumServings,
+            request.TotalTimeMinutes,
+            request.Calories);
         var result = await Sender.Send(command, cancellationToken);
         return result.IsSuccess ? Ok() : HandleFailure(result);
     }
@@ -116,9 +144,14 @@ public class RecipesController : ApiController
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
     [HttpPatch("{recipeId:guid}/sections")]
-    public async Task<IActionResult> UpdateRecipeSections(Guid recipeId, UpdateSectionsCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateRecipeSections(Guid recipeId, UpdateSectionsRequest request, CancellationToken cancellationToken)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var command = new UpdateSectionsCommand(
+            recipeId,
+            request.Sections.Select(s => new UpdateSection(
+                s.Id, 
+                s.Text, 
+                s.Ingredients.Select(i => new UpdateIngredient(i.Id, i.Text)).ToList())).ToList());
         var result = await Sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok() : HandleFailure(result);
@@ -130,9 +163,13 @@ public class RecipesController : ApiController
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
     [HttpPatch("{recipeId:guid}/instructions")]
-    public async Task<IActionResult> UpdateRecipeInstructions(Guid recipeId, UpdateInstructionsCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateRecipeInstructions(Guid recipeId, UpdateInstructionsRequest request, CancellationToken cancellationToken)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var command = new UpdateInstructionsCommand(
+            recipeId,
+            request.Instructions.Select(s => new UpdateInstruction(
+                s.Id,
+                s.Text)).ToList());
         var result = await Sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok() : HandleFailure(result);
@@ -146,8 +183,7 @@ public class RecipesController : ApiController
     [HttpDelete("{recipeId:guid}")]
     public async Task<IActionResult> DeleteRecipe(Guid recipeId, CancellationToken cancellationToken)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var command = new RemoveRecipeCommand(userId, recipeId);
+        var command = new RemoveRecipeCommand(recipeId);
         var result = await Sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? Ok() : HandleFailure(result);
